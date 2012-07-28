@@ -13,7 +13,6 @@ namespace SPARQLNET.Misc
         /// </summary>
         public string StringValue { get; protected set; }
 
-
         /// <summary>
         /// Constructor used to init a StringValue Attribute
         /// </summary>

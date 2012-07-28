@@ -10,7 +10,7 @@ namespace SPARQLNET.Misc
 	public static class OutputHelper
 	{
 
-		public static string GetOutput(this QueryResult res, OutputFormat format, int tableWidth)
+		public static string GetOutput(this QueryResult res, OutputFormat format, int tableWidth = 77, string separator = ",")
 		{
 			switch (format)
 			{
@@ -18,9 +18,63 @@ namespace SPARQLNET.Misc
 					return GetTextOutput(res, tableWidth);
 				case OutputFormat.HTML:
 					return GetHTLMOutput(res, tableWidth);
+				case OutputFormat.CSV:
+					return GetCSVOutput(res, separator);
+				case OutputFormat.DataList:
+					return GetDataListOutput(res, separator);
 				default:
 					throw new ArgumentOutOfRangeException("format");
 			}
+		}
+
+		private static string GetDataListOutput(QueryResult res, string separator)
+		{
+			if (res != null)
+			{
+				StringBuilder sb = new StringBuilder();
+
+				if (res.Results != null)
+				{
+					foreach (Result result in res.Results.Results)
+					{
+						foreach (Binding binding in result.Results)
+						{
+							sb.AppendLine(binding.Name + separator + binding.Value);
+						}
+					}
+				}
+
+				return sb.ToString();
+			}
+
+			return string.Empty;
+		}
+
+		private static string GetCSVOutput(QueryResult res, string separator)
+		{
+			if (res != null)
+			{
+				StringBuilder sb = new StringBuilder();
+
+				if (res.Head != null)
+				{
+					string[] columns = res.Head.Variables.Select(c => c.Name).ToArray();
+					sb.AppendLine(string.Join(separator, columns));
+				}
+
+				if (res.Results != null)
+				{
+					foreach (Result result in res.Results.Results)
+					{
+						List<string> columns = result.Results.Select(bindings => bindings.Value).ToList();
+						sb.AppendLine(string.Join(separator, columns));
+					}
+				}
+
+				return sb.ToString();
+			}
+
+			return string.Empty;
 		}
 
 		private static string GetTextOutput(QueryResult res, int tableWidth)
@@ -42,8 +96,8 @@ namespace SPARQLNET.Misc
 				{
 					foreach (Result result in res.Results.Results)
 					{
-						List<string> cols = result.Results.Select(bindings => bindings.Value).ToList();
-						sb.AppendLine(PrintRow(tableWidth, cols.ToArray()));
+						List<string> columns = result.Results.Select(bindings => bindings.Value).ToList();
+						sb.AppendLine(PrintRow(tableWidth, columns.ToArray()));
 					}
 				}
 

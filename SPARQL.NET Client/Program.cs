@@ -24,7 +24,7 @@ namespace SPARQLNETClient
 												"     FILTER (?birth < \"1900-01-01\"^^xsd:date) ." +
 												"} ORDER BY ?birth LIMIT 10");
 
-			Console.WriteLine(result.GetOutput(OutputFormat.Text, 77));
+			Console.WriteLine(result.GetOutput(OutputFormat.CSV));
 
 			Console.WriteLine("Press a key to continue");
 			Console.ReadLine();

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SPARQLNET.Enums
+﻿namespace SPARQLNET.Enums
 {
 	public enum OutputFormat
 	{
 		Text,
-		HTML
+		HTML,
+		CSV,
+		DataList
 	}
 }
