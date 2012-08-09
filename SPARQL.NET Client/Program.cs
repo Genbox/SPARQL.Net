@@ -11,10 +11,10 @@ namespace SPARQLNETClient
 		static void Main(string[] args)
 		{
 			//Set the endpoint
-			DBPedia dbPedia = new DBPedia("http://dbpedia.org/sparql"); //http://dbpedia-live.openlinksw.com
+		    QueryClient queryClient = new QueryClient("http://dbpedia.org/sparql");
 
 			//Create a query that finds people who were born in Berlin before 1900
-			QueryResult result = dbPedia.Query("PREFIX : <http://dbpedia.org/resource/>" +
+			QueryResult result = queryClient.Query("PREFIX : <http://dbpedia.org/resource/>" +
 												"PREFIX dbo: <http://dbpedia.org/ontology/>" +
 												"SELECT ?name ?birth ?death ?person WHERE {" +
 												"     ?person dbo:birthPlace :Berlin ." +

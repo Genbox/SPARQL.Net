@@ -6,12 +6,12 @@ using SPARQLNET.Objects;
 
 namespace SPARQLNET
 {
-	public class DBPedia
+	public class QueryClient
 	{
 		private static RestClient _client = new RestClient();
 		private bool _useTls;
 
-		public DBPedia(string endpoint)
+		public QueryClient(string endpoint)
 		{
 			_client.BaseUrl = endpoint;
 			_client.Proxy = null;
