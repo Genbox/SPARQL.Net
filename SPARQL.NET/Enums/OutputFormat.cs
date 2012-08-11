@@ -4,7 +4,6 @@
 	{
 		Table,
 		HTML,
-		CSV,
 		DataList
 	}
 }
