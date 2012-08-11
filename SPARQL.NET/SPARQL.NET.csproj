@@ -37,25 +37,19 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RestSharp">
+    <Reference Include="RestSharp, Version=103.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSVParser.cs" />
     <Compile Include="Enums\OutputFormat.cs" />
-    <Compile Include="Misc\ExtensionMethods.cs" />
-    <Compile Include="Enums\Format.cs" />
     <Compile Include="Misc\OutputHelper.cs" />
-    <Compile Include="Objects\Binding.cs" />
-    <Compile Include="Objects\Content.cs" />
-    <Compile Include="Objects\Head.cs" />
-    <Compile Include="Objects\QueryResult.cs" />
-    <Compile Include="Objects\Result.cs" />
-    <Compile Include="Objects\Variable.cs" />
+    <Compile Include="Objects\Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Misc\StringValueAttribute.cs" />
     <Compile Include="QueryClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

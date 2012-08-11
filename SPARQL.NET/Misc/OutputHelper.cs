@@ -1,188 +1,134 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using SPARQLNET.Enums;
 using SPARQLNET.Objects;
-using System.Linq;
 
 namespace SPARQLNET.Misc
 {
-	public static class OutputHelper
-	{
+    public static class OutputHelper
+    {
+        public static string GetOutput(this Table table, OutputFormat format, int tableWidth = 77, string separator = ",")
+        {
+            switch (format)
+            {
+                case OutputFormat.Table:
+                    return GetTextOutput(table, tableWidth);
+                case OutputFormat.HTML:
+                    return GetHTLMOutput(table, tableWidth);
+                case OutputFormat.DataList:
+                    return GetDataListOutput(table, separator);
+                default:
+                    throw new ArgumentOutOfRangeException("format");
+            }
+        }
 
-		public static string GetOutput(this QueryResult res, OutputFormat format, int tableWidth = 77, string separator = ",")
-		{
-			switch (format)
-			{
-				case OutputFormat.Text:
-					return GetTextOutput(res, tableWidth);
-				case OutputFormat.HTML:
-					return GetHTLMOutput(res, tableWidth);
-				case OutputFormat.CSV:
-					return GetCSVOutput(res, separator);
-				case OutputFormat.DataList:
-					return GetDataListOutput(res, separator);
-				default:
-					throw new ArgumentOutOfRangeException("format");
-			}
-		}
+        private static string GetDataListOutput(Table table, string separator)
+        {
+            if (table != null)
+            {
+                StringBuilder sb = new StringBuilder();
 
-		private static string GetDataListOutput(QueryResult res, string separator)
-		{
-			if (res != null)
-			{
-				StringBuilder sb = new StringBuilder();
+                foreach (Row row in table.Rows)
+                {
+                    sb.AppendLine(string.Join(separator, row));
+                }
 
-				if (res.Results != null)
-				{
-					foreach (Result result in res.Results.Results)
-					{
-						foreach (Binding binding in result.Results)
-						{
-							sb.AppendLine(binding.Name + separator + binding.Value);
-						}
-					}
-				}
+                return sb.ToString();
+            }
 
-				return sb.ToString();
-			}
+            return string.Empty;
+        }
 
-			return string.Empty;
-		}
+        private static string GetTextOutput(Table table, int tableWidth)
+        {
+            if (table != null)
+            {
+                StringBuilder sb = new StringBuilder();
 
-		private static string GetCSVOutput(QueryResult res, string separator)
-		{
-			if (res != null)
-			{
-				StringBuilder sb = new StringBuilder();
+                sb.AppendLine(PrintLine(tableWidth));
+                sb.AppendLine(PrintRow(tableWidth, table.Columns.ToArray()));
+                sb.AppendLine(PrintLine(tableWidth));
 
-				if (res.Head != null)
-				{
-					string[] columns = res.Head.Variables.Select(c => c.Name).ToArray();
-					sb.AppendLine(string.Join(separator, columns));
-				}
+                foreach (Row row in table.Rows)
+                {
+                    sb.AppendLine(PrintRow(tableWidth, row.ToArray()));
+                }
 
-				if (res.Results != null)
-				{
-					foreach (Result result in res.Results.Results)
-					{
-						List<string> columns = result.Results.Select(bindings => bindings.Value).ToList();
-						sb.AppendLine(string.Join(separator, columns));
-					}
-				}
+                sb.AppendLine(PrintLine(tableWidth));
 
-				return sb.ToString();
-			}
+                return sb.ToString();
+            }
 
-			return string.Empty;
-		}
+            return string.Empty;
+        }
 
-		private static string GetTextOutput(QueryResult res, int tableWidth)
-		{
-			if (res != null)
-			{
-				StringBuilder sb = new StringBuilder();
+        private static string GetHTLMOutput(Table table, int tableWidth)
+        {
+            if (table != null)
+            {
+                StringBuilder sb = new StringBuilder();
 
-				if (res.Head != null)
-				{
-					sb.AppendLine(PrintLine(tableWidth));
-					string[] columns = res.Head.Variables.Select(c => c.Name).ToArray();
-					sb.AppendLine(PrintRow(tableWidth, columns));
-				}
+                sb.AppendLine("<table width=\"" + tableWidth + "\">");
 
-				sb.AppendLine(PrintLine(tableWidth));
+                sb.AppendLine("<tr>");
+                string[] columns = table.Columns.ToArray();
+                string width = (tableWidth - columns.Length) / columns.Length + "px";
 
-				if (res.Results != null)
-				{
-					foreach (Result result in res.Results.Results)
-					{
-						List<string> columns = result.Results.Select(bindings => bindings.Value).ToList();
-						sb.AppendLine(PrintRow(tableWidth, columns.ToArray()));
-					}
-				}
+                foreach (string column in columns)
+                {
+                    sb.AppendLine("    <td width=\"" + width + "\">" + column + "</td>");
+                }
 
-				sb.AppendLine(PrintLine(tableWidth));
+                sb.AppendLine("</tr>");
+                sb.AppendLine("<tr>");
 
-				return sb.ToString();
-			}
+                foreach (Row row in table.Rows)
+                {
+                    columns = row.ToArray();
+                    width = (tableWidth - columns.Length) / columns.Length + "px";
 
-			return string.Empty;
-		}
+                    foreach (string column in columns)
+                    {
+                        sb.AppendLine("    <td width=\"" + width + "\">" + column + "</td>");
+                    }
 
-		private static string GetHTLMOutput(QueryResult res, int tableWidth)
-		{
-			if (res != null)
-			{
-				StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("</tr>");
+                }
 
-				sb.AppendLine("<table width=\"" + tableWidth + "\">");
+                sb.AppendLine("</table>");
 
-				if (res.Head != null)
-				{
-					sb.AppendLine("<tr>");
-					string[] columns = res.Head.Variables.Select(c => c.Name).ToArray();
-					string width = (tableWidth - columns.Length) / columns.Length + "px";
+                return sb.ToString();
+            }
 
-					foreach (string column in columns)
-					{
-						sb.AppendLine("    <td width=\"" + width + "\">" + column + "</td>");
-					}
+            return string.Empty;
+        }
 
-					sb.AppendLine("</tr>");
-				}
+        private static string PrintLine(int tableWidth)
+        {
+            return new string('-', tableWidth);
+        }
 
-				if (res.Results != null)
-				{
-					sb.AppendLine("<tr>");
+        private static string PrintRow(int tableWidth, params string[] columns)
+        {
+            int width = (tableWidth - columns.Length) / columns.Length;
+            string row = "|";
 
-					foreach (Result result in res.Results.Results)
-					{
-						string[] columns = result.Results.Select(bindings => bindings.Value).ToArray();
-						string width = (tableWidth - columns.Length) / columns.Length + "px";
+            foreach (string column in columns)
+            {
+                row += AlignCentre(column, width) + "|";
+            }
 
-						foreach (string column in columns)
-						{
-							sb.AppendLine("    <td width=\"" + width + "\">" + column + "</td>");
-						}
+            return row;
+        }
 
-						sb.AppendLine("</tr>");
-					}
-				}
+        private static string AlignCentre(string text, int width)
+        {
+            text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;
 
-				sb.AppendLine("</table>");
+            if (string.IsNullOrEmpty(text))
+                return new string(' ', width);
 
-				return sb.ToString();
-			}
-
-			return string.Empty;
-		}
-
-		private static string PrintLine(int tableWidth)
-		{
-			return new string('-', tableWidth);
-		}
-
-		private static string PrintRow(int tableWidth, params string[] columns)
-		{
-			int width = (tableWidth - columns.Length) / columns.Length;
-			string row = "|";
-
-			foreach (string column in columns)
-			{
-				row += AlignCentre(column, width) + "|";
-			}
-
-			return row;
-		}
-
-		private static string AlignCentre(string text, int width)
-		{
-			text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;
-
-			if (string.IsNullOrEmpty(text))
-				return new string(' ', width);
-
-			return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
-		}
-	}
+            return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
+        }
+    }
 }

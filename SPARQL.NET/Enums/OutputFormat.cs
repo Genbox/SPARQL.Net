@@ -2,7 +2,7 @@
 {
 	public enum OutputFormat
 	{
-		Text,
+		Table,
 		HTML,
 		CSV,
 		DataList
