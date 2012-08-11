@@ -11,7 +11,6 @@ namespace SPARQLNET
         public QueryClient(string endpoint)
         {
             _client.BaseUrl = endpoint;
-            _client.Proxy = null;
         }
 
         /// <summary>
