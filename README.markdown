@@ -49,4 +49,4 @@ Output:
 -----------------------------------------------------------------------------
 ```
 
-For more examples, take a look at the SPARQL.NET Client included in the proejct.
+For more examples, take a look at the SPARQL.NET Client included in the project.
